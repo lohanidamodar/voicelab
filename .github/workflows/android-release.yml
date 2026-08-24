@@ -1,0 +1,53 @@
+# Publish this app to Google Play.
+#
+# A thin caller for the shared reusable workflow in popupbits/.github —
+# the build, sign and upload steps live there, so a change to the pipeline
+# reaches every app at once.
+#
+# Repository secrets (Settings -> Secrets and variables -> Actions).
+# Organization secrets do NOT reach private repos on the free plan, so
+# these have to be set per repository:
+#
+#   PLAY_STORE_JSON_KEY_DATA, ANDROID_KEYSTORE_BASE64,
+#   ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS,
+#   ANDROID_KEY_PASSWORD, APP_IDENTIFIER
+
+name: Android Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Play Store track to publish to"
+        required: true
+        type: choice
+        default: internal
+        options:
+          - internal
+          - beta
+          - release
+      supply_release_status:
+        description: "Release status ('draft' for a first-ever release on a draft app)"
+        required: false
+        type: choice
+        default: completed
+        options:
+          - completed
+          - draft
+          - halted
+          - inProgress
+      flutter_version:
+        description: "Flutter SDK version to build with"
+        required: false
+        type: string
+        default: "3.47.1"
+
+jobs:
+  android-release:
+    uses: popupbits/.github/.github/workflows/publish-to-play-store.yml@main
+    with:
+      release-type: ${{ inputs.release_type }}
+      release-status: ${{ inputs.supply_release_status }}
+      flutter-version: ${{ inputs.flutter_version }}
+      run-tests: true
+    secrets: inherit

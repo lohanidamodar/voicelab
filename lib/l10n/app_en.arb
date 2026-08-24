@@ -1,0 +1,94 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "VoiceLab",
+  "@appTitle": {
+    "description": "The app name, shown in the title bar and the About screen"
+  },
+
+  "navClone": "Clone",
+  "navSpeak": "Speak",
+  "navSettings": "Settings",
+
+  "actionRetry": "Retry",
+  "actionCancel": "Cancel",
+  "actionConfirm": "Confirm",
+  "actionOk": "OK",
+  "actionClose": "Close",
+
+  "comingSoon": "Nothing here yet",
+  "comingSoonBody": "This screen is a placeholder. Replace it with the real thing.",
+
+  "settingsTitle": "Settings",
+  "settingsAppearance": "Appearance",
+  "settingsGeneral": "General",
+  "settingsAbout": "About",
+
+  "settingsAccent": "Accent colour",
+  "settingsThemeMode": "Theme",
+  "themeSystem": "Match device",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+
+  "settingsLanguage": "Language",
+  "languageSystem": "Match device",
+  "languageEnglish": "English",
+  "languageNepali": "Nepali",
+
+  "settingsTextSize": "Text size",
+  "textSizeSmall": "Small",
+  "textSizeDefault": "Default",
+  "textSizeLarge": "Large",
+  "textSizeLarger": "Larger",
+
+  "accentIndigo": "Indigo",
+  "accentTeal": "Teal",
+  "accentForest": "Forest",
+  "accentAmber": "Amber",
+  "accentCoral": "Coral",
+  "accentRose": "Rose",
+  "accentMauve": "Mauve",
+  "accentSlate": "Slate",
+
+  "aboutTitle": "About",
+  "aboutVersion": "Version {version}",
+  "@aboutVersion": {
+    "placeholders": {
+      "version": { "type": "String", "example": "1.0.0+1" }
+    }
+  },
+
+  "aboutPrivacyPolicy": "Privacy policy",
+  "aboutPrivacyPolicySubtitle": "What we collect, and what we don't",
+  "aboutLicenses": "Open-source licences",
+  "aboutLicensesSubtitle": "Third-party packages this app uses",
+
+  "aboutShare": "Share VoiceLab",
+  "aboutShareSubtitle": "Tell someone who'd find it useful",
+  "aboutShareMessage": "I've been using VoiceLab — you might like it too.",
+
+  "aboutRate": "Rate VoiceLab",
+  "aboutRateSubtitle": "A rating genuinely helps",
+
+  "aboutMoreApps": "More from PopupBits",
+  "aboutMoreAppsSubtitle": "Other things we build",
+
+  "aboutSupport": "Contact support",
+  "aboutSupportSubtitle": "info@popupbits.com",
+  "aboutSupportSubject": "VoiceLab support",
+
+  "errorCouldNotOpen": "Couldn't open {target}",
+  "@errorCouldNotOpen": {
+    "placeholders": {
+      "target": { "type": "String", "example": "https://popupbits.com" }
+    }
+  },
+
+  "settingsDiagnostics": "Some features didn't start",
+  "settingsDiagnosticsBody": "{count} background service failed to start. The app works, but parts of it may not.",
+  "@settingsDiagnosticsBody": {
+    "placeholders": {
+      "count": { "type": "int", "example": "1" }
+    }
+  }
+}

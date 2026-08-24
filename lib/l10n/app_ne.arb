@@ -1,0 +1,91 @@
+{
+  "@@locale": "ne",
+
+  "appTitle": "VoiceLab",
+
+  "navClone": "Clone",
+  "navSpeak": "Speak",
+  "navSettings": "सेटिङ",
+
+  "actionRetry": "फेरि प्रयास गर्नुहोस्",
+  "actionCancel": "रद्द गर्नुहोस्",
+  "actionConfirm": "पुष्टि गर्नुहोस्",
+  "actionOk": "ठिक छ",
+  "actionClose": "बन्द गर्नुहोस्",
+
+  "comingSoon": "यहाँ अहिलेसम्म केही छैन",
+  "comingSoonBody": "यो स्क्रिन नमुना मात्र हो। यसलाई वास्तविक सामग्रीले बदल्नुहोस्।",
+
+  "settingsTitle": "सेटिङ",
+  "settingsAppearance": "रूपरङ",
+  "settingsGeneral": "सामान्य",
+  "settingsAbout": "बारेमा",
+
+  "settingsAccent": "मुख्य रङ",
+  "settingsThemeMode": "थिम",
+  "themeSystem": "यन्त्रअनुसार",
+  "themeLight": "उज्यालो",
+  "themeDark": "अँध्यारो",
+
+  "settingsLanguage": "भाषा",
+  "languageSystem": "यन्त्रअनुसार",
+  "languageEnglish": "English",
+  "languageNepali": "नेपाली",
+
+  "settingsTextSize": "अक्षरको आकार",
+  "textSizeSmall": "सानो",
+  "textSizeDefault": "सामान्य",
+  "textSizeLarge": "ठूलो",
+  "textSizeLarger": "अझ ठूलो",
+
+  "accentIndigo": "नीलो",
+  "accentTeal": "हरियो-नीलो",
+  "accentForest": "वन हरियो",
+  "accentAmber": "पहेँलो",
+  "accentCoral": "सुन्तले",
+  "accentRose": "गुलाबी",
+  "accentMauve": "बैजनी",
+  "accentSlate": "खरानी",
+
+  "aboutTitle": "बारेमा",
+  "aboutVersion": "संस्करण {version}",
+  "@aboutVersion": {
+    "placeholders": {
+      "version": { "type": "String", "example": "1.0.0+1" }
+    }
+  },
+
+  "aboutPrivacyPolicy": "गोपनीयता नीति",
+  "aboutPrivacyPolicySubtitle": "हामी के सङ्कलन गर्छौं, र के गर्दैनौं",
+  "aboutLicenses": "खुला स्रोत अनुमतिपत्र",
+  "aboutLicensesSubtitle": "यो एपले प्रयोग गर्ने अन्य प्याकेजहरू",
+
+  "aboutShare": "VoiceLab साझा गर्नुहोस्",
+  "aboutShareSubtitle": "उपयोगी लाग्ने कसैलाई भन्नुहोस्",
+  "aboutShareMessage": "म VoiceLab प्रयोग गर्दै छु — तपाईंलाई पनि मन पर्न सक्छ।",
+
+  "aboutRate": "VoiceLab लाई मूल्याङ्कन गर्नुहोस्",
+  "aboutRateSubtitle": "तपाईंको मूल्याङ्कनले साँच्चै मद्दत गर्छ",
+
+  "aboutMoreApps": "PopupBits का अन्य एपहरू",
+  "aboutMoreAppsSubtitle": "हामीले बनाएका अरू कुराहरू",
+
+  "aboutSupport": "सहयोगका लागि सम्पर्क",
+  "aboutSupportSubtitle": "info@popupbits.com",
+  "aboutSupportSubject": "VoiceLab सहयोग",
+
+  "errorCouldNotOpen": "{target} खोल्न सकिएन",
+  "@errorCouldNotOpen": {
+    "placeholders": {
+      "target": { "type": "String", "example": "https://popupbits.com" }
+    }
+  },
+
+  "settingsDiagnostics": "केही सुविधाहरू सुरु भएनन्",
+  "settingsDiagnosticsBody": "{count} वटा पृष्ठभूमि सेवा सुरु हुन सकेन। एप चल्छ, तर केही भागहरूले काम नगर्न सक्छन्।",
+  "@settingsDiagnosticsBody": {
+    "placeholders": {
+      "count": { "type": "int", "example": "1" }
+    }
+  }
+}
