@@ -13,7 +13,9 @@ dependencies:
   # Everything that is not UI: FFI engine host, STT, phonemizer, audio codecs.
   # The CLI and the local server use the same package.
   speech_pipeline:
-    path: ../../speech-pipeline-app/speech_pipeline
+    git:
+      url: https://github.com/lohanidamodar/speech-pipeline.git
+      path: speech_pipeline
   agent_cli:
     git:
       url: https://github.com/lohanidamodar/agent_cli.git

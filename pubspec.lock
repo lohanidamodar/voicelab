@@ -981,9 +981,11 @@ packages:
   speech_pipeline:
     dependency: "direct main"
     description:
-      path: "../../speech-pipeline-app/speech_pipeline"
-      relative: true
-    source: path
+      path: speech_pipeline
+      ref: HEAD
+      resolved-ref: "5339baefe5b9c8db36a5cdb57d6a5371648263c2"
+      url: "https://github.com/lohanidamodar/speech-pipeline.git"
+    source: git
     version: "0.1.0"
   stack_trace:
     dependency: transitive
