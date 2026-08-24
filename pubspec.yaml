@@ -15,7 +15,8 @@ dependencies:
   speech_pipeline:
     path: ../../speech-pipeline-app/speech_pipeline
   agent_cli:
-    path: ../../speech-pipeline-app/agent_cli
+    git:
+      url: https://github.com/lohanidamodar/agent_cli.git
 
   # Material, decoupled from the Flutter SDK. Every file under lib/ imports
   # this instead of package:flutter/material.dart — the two define

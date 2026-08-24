@@ -12,9 +12,11 @@ packages:
   agent_cli:
     dependency: "direct main"
     description:
-      path: "../../speech-pipeline-app/agent_cli"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "22c2c0e15f4c640f10b5e02feaa82aa569fa90ce"
+      url: "https://github.com/lohanidamodar/agent_cli.git"
+    source: git
     version: "0.1.0"
   analyzer:
     dependency: transitive
