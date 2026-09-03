@@ -53,20 +53,6 @@ jobs:
           }
           "version=$tag" >> $env:GITHUB_OUTPUT
 
-      # speech_pipeline is a private repository; the default token is scoped
-      # to this repo alone. Create a fine-grained PAT with read access to
-      # lohanidamodar/speech-pipeline and add it as the repository secret
-      # PIPELINE_TOKEN.
-      - name: Authenticate for the private pipeline dependency
-        shell: pwsh
-        env:
-          TOKEN: ${{ secrets.PIPELINE_TOKEN }}
-        run: |
-          if (-not $env:TOKEN) {
-            throw "PIPELINE_TOKEN is not set. pub cannot clone the private speech-pipeline repository without it."
-          }
-          git config --global url."https://x-access-token:$env:TOKEN@github.com/".insteadOf "https://github.com/"
-
       - run: flutter pub get
       - run: dart analyze --fatal-infos
       - run: flutter test
