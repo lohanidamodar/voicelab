@@ -21,6 +21,21 @@ jobs:
           channel: stable
           cache: true
 
+      # speech_pipeline is a private repository, so pub cannot clone it with
+      # the default token — that one is scoped to this repo alone. Create a
+      # fine-grained PAT with read access to lohanidamodar/speech-pipeline and
+      # add it as the repository secret PIPELINE_TOKEN.
+      - name: Authenticate for the private pipeline dependency
+        env:
+          TOKEN: ${{ secrets.PIPELINE_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::PIPELINE_TOKEN is not set. pub cannot clone the" \
+                 "private speech-pipeline repository without it."
+            exit 1
+          fi
+          git config --global url."https://x-access-token:$TOKEN@github.com/".insteadOf "https://github.com/"
+
       - run: flutter pub get
       - run: dart analyze --fatal-infos
       - run: flutter test
