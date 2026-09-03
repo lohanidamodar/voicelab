@@ -198,9 +198,17 @@ Uint8List _png(int size, Uint8List rgba) {
       .toBytes();
 }
 
-/// Packs the images into an .ico of uncompressed 32-bit bitmaps.
+/// Packs the images into an .ico.
+///
+/// The large sizes go in as PNG and the small ones as bitmaps — an entry may
+/// be either. PNG takes the 256 from 256 KB to three, and below 64 the header
+/// costs more than the compression saves. Note that .NET's System.Drawing
+/// cannot read a PNG entry, though Explorer and Inno Setup can.
 void _writeIco(File out, List<int> sizes) {
-  final images = [for (final s in sizes) _dib(s, _draw(s))];
+  final images = [
+    for (final s in sizes)
+      s >= 64 ? _png(s, _draw(s)) : _dib(s, _draw(s)),
+  ];
 
   var offset = 6 + 16 * sizes.length;
   final header = BytesBuilder()
