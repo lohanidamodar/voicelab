@@ -59,6 +59,7 @@ Future<void> main(List<String> argv) async {
   _addAudioCpp(stage, args.option('audiocpp-dir'));
   await _addSherpa(stage, out, args.option('sherpa')!);
   _addDocuments(stage);
+  await _addLicenceTexts(stage);
 
   final zip = File('${stage.path}.zip');
   _zip(stage, zip);
@@ -227,6 +228,35 @@ void _addDocuments(Directory stage) {
     source.copySync('${stage.path}\\$name');
   }
   stdout.writeln('  LICENSE, THIRD-PARTY-NOTICES.md');
+}
+
+/// Fetches the full licence text of every library this redistributes.
+///
+/// Apache-2.0 asks that recipients be given a copy of the licence, not just
+/// its name, and MIT that the notice travel with the software. Flutter's own
+/// licence page covers the Dart packages; nothing covers the native libraries
+/// but this.
+Future<void> _addLicenceTexts(Directory stage) async {
+  const sources = {
+    'audio.cpp-Apache-2.0.txt':
+        'https://raw.githubusercontent.com/0xShug0/audio.cpp/main/LICENSE',
+    'sherpa-onnx-Apache-2.0.txt':
+        'https://raw.githubusercontent.com/k2-fsa/sherpa-onnx/master/LICENSE',
+    'onnxruntime-MIT.txt':
+        'https://raw.githubusercontent.com/microsoft/onnxruntime/main/LICENSE',
+  };
+
+  final dir = Directory('${stage.path}\\licenses')..createSync();
+  for (final entry in sources.entries) {
+    final response = await http.get(Uri.parse(entry.value));
+    if (response.statusCode != 200) {
+      throw StateError('Could not fetch ${entry.value} — HTTP '
+          '${response.statusCode}. A release may not ship these libraries '
+          'without their licence text.');
+    }
+    File('${dir.path}\\${entry.key}').writeAsBytesSync(response.bodyBytes);
+  }
+  stdout.writeln('  licenses/: ${sources.length} files');
 }
 
 void _zip(Directory stage, File zip) {
