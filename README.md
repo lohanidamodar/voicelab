@@ -22,3 +22,12 @@ On Windows, run `flutter` from PowerShell rather than WSL.
 - **Theming** with a user-selectable accent, theme mode and text size
 
 See [PROJECT.md](PROJECT.md) for the full tour.
+
+## Licence
+
+MIT — see [LICENSE](LICENSE).
+
+The speech models are not MIT, and one recogniser is not open source at all.
+None are bundled: VoiceLab downloads the model you choose from its publisher and
+shows the licence first. See
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
