@@ -6,6 +6,7 @@ import '../../features/clone/clone_screen.dart';
 import '../../features/speak/speak_screen.dart';
 import '../../features/settings/about_screen.dart';
 import '../../features/settings/llm_screen.dart';
+import '../../features/settings/voice_model_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/shell/app_shell.dart';
 import 'routes.dart';
@@ -56,6 +57,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                     path: 'llm',
                     parentNavigatorKey: rootNavigatorKey,
                     builder: (_, _) => const LlmScreen(),
+                  ),
+                  GoRoute(
+                    path: 'voice-model',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (_, _) => const VoiceModelScreen(),
                   ),
                 ],
               ),

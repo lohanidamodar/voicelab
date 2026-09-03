@@ -7,6 +7,7 @@ import 'cli_agents.dart';
 import 'engine_provider.dart';
 import 'llm_settings.dart';
 import 'voice_library_provider.dart';
+import 'voice_model_settings.dart';
 
 /// How the assistant is configured. Changing any of it rebuilds the pipeline,
 /// which is why it is a small value type rather than scattered providers.
@@ -128,6 +129,7 @@ final speechPipelineProvider = FutureProvider<SpeechPipeline>((ref) async {
     llmEngine: cliEngine,
     cloneService: clone,
     voiceProfile: voice,
+    voiceStylePolicy: ref.watch(voiceModelProvider).stylePolicy,
     onLanguageDetected: ref.read(pipelineNoticeProvider.notifier).show,
     onScriptRepair: (r) => ref
         .read(pipelineNoticeProvider.notifier)

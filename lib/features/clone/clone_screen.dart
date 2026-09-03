@@ -10,6 +10,7 @@ import 'package:speech_pipeline/speech_pipeline.dart';
 
 import '../../core/engine/engine_provider.dart';
 import '../../core/engine/voice_library_provider.dart';
+import '../../core/engine/voice_model_settings.dart';
 import '../../core/ui/views.dart';
 
 /// Pick a voice, or record a new one, then hear the model speak in it.
@@ -304,12 +305,22 @@ class _CloneScreenState extends ConsumerState<CloneScreen> {
                 value: v.id,
                 contentPadding: EdgeInsets.zero,
                 title: Text(v.name),
-                subtitle: v.isCloned
-                    ? Text(
-                        v.hasTranscript ? v.transcript! : 'No reference transcript — the clone will be weaker',
+                subtitle: switch (v) {
+                  final p when p.isDesigned => Text(p.instruct!),
+                  final p when p.isCloned => Text(
+                      p.hasTranscript
+                          ? p.transcript!
+                          : 'No reference transcript — the clone will be weaker',
+                    ),
+                  _ => const Text("The model's own speaker"),
+                },
+                secondary: v.isDesigned
+                    ? IconButton(
+                        tooltip: 'Delete',
+                        icon: const Icon(PiconsRegular.trash),
+                        onPressed: _busy ? null : () => _deleteVoice(v),
                       )
-                    : const Text("The model's own speaker"),
-                secondary: v.isCloned
+                    : v.isCloned
                     ? Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -331,12 +342,88 @@ class _CloneScreenState extends ConsumerState<CloneScreen> {
         ),
       ),
       const SizedBox(height: 8),
-      OutlinedButton.icon(
-        onPressed: _busy ? null : _toggleRecord,
-        icon: const Icon(PiconsRegular.microphone),
-        label: const Text('Add a voice'),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          OutlinedButton.icon(
+            onPressed: _busy ? null : _toggleRecord,
+            icon: const Icon(PiconsRegular.microphone),
+            label: const Text('Record a voice'),
+          ),
+          // Only offered when the loaded model can act on a description.
+          // Showing it otherwise would take a description and ignore it.
+          if (ref.watch(voiceModelProvider).canDesignVoice)
+            OutlinedButton.icon(
+              onPressed: _busy ? null : _describeVoice,
+              icon: const Icon(PiconsRegular.pen),
+              label: const Text('Describe a voice'),
+            ),
+        ],
       ),
     ];
+  }
+
+  /// Makes a voice out of a sentence describing it.
+  ///
+  /// No recording involved: the model is being asked to invent a speaker, so
+  /// the description is the whole of the profile.
+  Future<void> _describeVoice() async {
+    final controller = TextEditingController();
+    final description = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Describe a voice'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Say what the speaker should sound like — age, sex, pace, mood.',
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              maxLines: 2,
+              decoration: const InputDecoration(
+                hintText: 'an older man, unhurried, warm and gravelly',
+                border: OutlineInputBorder(),
+              ),
+              onSubmitted: (v) => Navigator.of(context).pop(v),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(controller.text),
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+
+    final wanted = description?.trim();
+    if (wanted == null || wanted.isEmpty) return;
+
+    final library = ref.read(voiceLibraryProvider).value;
+    if (library == null) return;
+
+    // The description doubles as the name: it is what distinguishes one
+    // designed voice from another, and asking for both is a form to fill in.
+    final profile = await library.describe(
+      description: wanted,
+      name: wanted.length > 40 ? '${wanted.substring(0, 40)}…' : wanted,
+    );
+    if (!mounted) return;
+    ref
+      ..invalidate(voiceLibraryProvider)
+      ..read(selectedVoiceProvider.notifier).select(profile);
   }
 
   List<Widget> _draftSection() => [

@@ -9,6 +9,7 @@ abstract final class Routes {
   static const String settings = '/settings';
   static const String about = '/settings/about';
   static const String llm = '/settings/llm';
+  static const String voiceModel = '/settings/voice-model';
 
   /// Where the app opens.
   static const String initial = clone;

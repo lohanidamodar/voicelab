@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speech_pipeline/speech_pipeline.dart';
 
+import 'voice_model_settings.dart';
+
 /// Where the native library and models live.
 ///
 /// Desktop reads them from disk next to the build; on Android the .so ships in
@@ -55,18 +57,36 @@ final enginePathsProvider = Provider<EnginePaths?>(
 /// alive for the life of the app rather than per screen.
 final cloneServiceProvider = FutureProvider<CloneService>((ref) async {
   final paths = ref.watch(enginePathsProvider);
-  if (paths == null) {
+
+  // The chosen voice wins: it is downloaded, its licence was accepted, and it
+  // knows its own family. The dart-defines stay as the escape hatch for a
+  // model that is not in the catalogue yet.
+  final chosen = ref.watch(voiceModelProvider);
+  final catalogue = ref.watch(voiceCatalogueProvider);
+
+  String modelPath;
+  String family;
+  if (catalogue.has(chosen)) {
+    final setup = await catalogue.prepare(chosen);
+    modelPath = setup.modelPath;
+    family = setup.family;
+  } else if (paths != null) {
+    modelPath = paths.modelPath;
+    family = paths.family;
+  } else {
     throw CloneException(
-      'No model configured. Pass --dart-define=VOICELAB_MODEL=<path to gguf>.',
+      'No voice downloaded yet. Settings › Voice model, or pass '
+      '--dart-define=VOICELAB_MODEL=<path to gguf>.',
     );
   }
+
   final service = await CloneService.start(
-    modelPath: paths.modelPath,
-    family: paths.family,
-    libraryPath: paths.libraryPath,
-    backend: paths.backend,
-    sttModelsDir: paths.sttModelsDir,
-    sherpaLibraryPath: paths.sherpaLibraryPath,
+    modelPath: modelPath,
+    family: family,
+    libraryPath: paths?.libraryPath,
+    backend: paths?.backend ?? AcBackend.best,
+    sttModelsDir: paths?.sttModelsDir,
+    sherpaLibraryPath: paths?.sherpaLibraryPath,
   );
   ref.onDispose(service.dispose);
   return service;

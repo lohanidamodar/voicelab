@@ -4,6 +4,7 @@ import 'package:picons/picons.dart';
 
 import '../../core/config/app_config.dart';
 import '../../core/engine/llm_settings.dart';
+import '../../core/engine/voice_model_settings.dart';
 import '../../core/router/navigation.dart';
 import '../../core/router/routes.dart';
 import '../../core/ui/feedback.dart';
@@ -35,6 +36,28 @@ List<SettingsSection> settingsSections(BuildContext context, WidgetRef ref) {
     SettingsSection(
       title: l10n.settingsAppearance,
       tiles: const [AccentTile(), ThemeModeTile(), TextScaleTile()],
+    ),
+    SettingsSection(
+      title: 'Voice',
+      tiles: [
+        Consumer(
+          builder: (context, ref, _) {
+            final voice = ref.watch(voiceModelProvider);
+            final installed = ref.watch(voiceCatalogueProvider).has(voice);
+            return ListTile(
+              leading: const Icon(PiconsRegular.speakerHigh),
+              title: const Text('Voice model'),
+              subtitle: Text(
+                installed
+                    ? '${voice.name} · ${voice.licence.name}'
+                    : '${voice.name} · not downloaded (${voice.sizeLabel})',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.pushTo(Routes.voiceModel),
+            );
+          },
+        ),
+      ],
     ),
     SettingsSection(
       title: 'Assistant',

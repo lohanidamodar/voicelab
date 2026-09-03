@@ -983,7 +983,7 @@ packages:
     description:
       path: speech_pipeline
       ref: HEAD
-      resolved-ref: "5339baefe5b9c8db36a5cdb57d6a5371648263c2"
+      resolved-ref: "4732c4f022300a5bb9a0da96b5cac10247473061"
       url: "https://github.com/lohanidamodar/speech-pipeline.git"
     source: git
     version: "0.1.0"
@@ -1163,6 +1163,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "15.3.0"
+  voice_models:
+    dependency: transitive
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "61911b1f02147383156a7b526202b63c7823482e"
+      url: "https://github.com/lohanidamodar/voice-models.git"
+    source: git
+    version: "0.1.0"
   watcher:
     dependency: transitive
     description:
