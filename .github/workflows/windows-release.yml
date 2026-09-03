@@ -28,6 +28,11 @@ env:
   # The C ABI shim that makes audio.cpp reachable from dart:ffi. It is ours,
   # not upstream's — which is why no audio.cpp release ships a shared library.
   CAPI_REPO: https://github.com/lohanidamodar/speech-pipeline.git
+  # Only the families this app can actually load. The default composite links
+  # all sixty, which is most of the library's size for engines nothing here
+  # can reach — the voices come from the voice_models catalogue, and it lists
+  # these two.
+  AUDIOCPP_MODELS: omnivoice;voxcpm2
 
 jobs:
   windows:
@@ -67,7 +72,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: audiocpp-lib
-          key: audiocpp-${{ env.AUDIOCPP_TAG }}-windows-x64-cpu
+          key: audiocpp-${{ env.AUDIOCPP_TAG }}-windows-x64-cpu-${{ env.AUDIOCPP_MODELS }}
 
       # Ninja rather than the Visual Studio generator. audiocpp_c is defined
       # in capi/, and `cmake --build --target` on the VS generator looks for
@@ -93,7 +98,8 @@ jobs:
           # PIC because engine_runtime is a static library and will not
           # otherwise link into a shared one.
           cmake -G Ninja -B audiocpp-build -S audiocpp-src `
-            -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON `
+            -DAUDIOCPP_MODEL_SET=custom "-DAUDIOCPP_MODELS=$env:AUDIOCPP_MODELS"
           cmake --build audiocpp-build --target audiocpp_c
 
           # The build tree scatters the library and its ggml backends; the
