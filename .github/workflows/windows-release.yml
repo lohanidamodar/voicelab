@@ -66,13 +66,20 @@ jobs:
           path: audiocpp-lib
           key: audiocpp-${{ env.AUDIOCPP_TAG }}-windows-x64-cpu
 
+      # Ninja rather than the Visual Studio generator. audiocpp_c is defined
+      # in capi/, and `cmake --build --target` on the VS generator looks for
+      # audiocpp_c.vcxproj in the build root — "Project file does not exist".
+      # Ninja resolves a target by name wherever it is defined, and is faster.
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: steps.audiocpp-cache.outputs.cache-hit != 'true'
+
       - name: Build audio.cpp
         if: steps.audiocpp-cache.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
           git clone --depth 1 --branch $env:AUDIOCPP_TAG https://github.com/0xShug0/audio.cpp.git audiocpp-src
-          cmake -B audiocpp-build -S audiocpp-src -DCMAKE_BUILD_TYPE=Release
-          cmake --build audiocpp-build --target audiocpp_c --config Release
+          cmake -G Ninja -B audiocpp-build -S audiocpp-src -DCMAKE_BUILD_TYPE=Release
+          cmake --build audiocpp-build --target audiocpp_c
 
           # The build tree scatters the library and its ggml backends; the
           # packager wants them in one directory.
