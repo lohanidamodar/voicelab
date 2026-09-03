@@ -25,6 +25,9 @@ permissions:
 env:
   # Pinned so a release is reproducible and the notices name the right build.
   AUDIOCPP_TAG: v0.7.1
+  # The C ABI shim that makes audio.cpp reachable from dart:ffi. It is ours,
+  # not upstream's — which is why no audio.cpp release ships a shared library.
+  CAPI_REPO: https://github.com/lohanidamodar/speech-pipeline.git
 
 jobs:
   windows:
@@ -73,12 +76,24 @@ jobs:
       - uses: ilammy/msvc-dev-cmd@v1
         if: steps.audiocpp-cache.outputs.cache-hit != 'true'
 
-      - name: Build audio.cpp
+      - name: Build audio.cpp with the C ABI shim
         if: steps.audiocpp-cache.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
-          git clone --depth 1 --branch $env:AUDIOCPP_TAG https://github.com/0xShug0/audio.cpp.git audiocpp-src
-          cmake -G Ninja -B audiocpp-build -S audiocpp-src -DCMAKE_BUILD_TYPE=Release
+          git clone --depth 1 --branch $env:AUDIOCPP_TAG --recurse-submodules `
+            https://github.com/0xShug0/audio.cpp.git audiocpp-src
+
+          # audio.cpp exposes a C++ API that no FFI can call. audiocpp_capi
+          # flattens the offline TTS and cloning path into a C ABI; it lives in
+          # speech-pipeline so it survives this checkout being thrown away.
+          git clone --depth 1 $env:CAPI_REPO capi-src
+          Copy-Item -Recurse capi-src\audiocpp_capi audiocpp-src\capi
+          Add-Content audiocpp-src\CMakeLists.txt "`nadd_subdirectory(capi)`n"
+
+          # PIC because engine_runtime is a static library and will not
+          # otherwise link into a shared one.
+          cmake -G Ninja -B audiocpp-build -S audiocpp-src `
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON
           cmake --build audiocpp-build --target audiocpp_c
 
           # The build tree scatters the library and its ggml backends; the
