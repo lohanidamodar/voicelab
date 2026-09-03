@@ -26,8 +26,16 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "13.3.0"
+  archive:
+    dependency: "direct dev"
+    description:
+      name: archive
+      sha256: ace891da0862b0e4cabbb064ee3fd87b2728b898949fdb366d83fe98342c9f19
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.0"
   args:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: args
       sha256: d0481093c50b1da8910eb0bb301626d4d8eb7284aa739614d2b394ee09e3ea04
@@ -393,7 +401,7 @@ packages:
     source: hosted
     version: "2.0.2"
   http:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: http
       sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
@@ -677,6 +685,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.2"
+  posix:
+    dependency: transitive
+    description:
+      name: posix
+      sha256: bc1bad54ad2b735816e31f8d4600cfde6c7839975085ddfbca48b6c9f7c4044e
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.5.2"
   process:
     dependency: transitive
     description:
@@ -983,7 +999,7 @@ packages:
     description:
       path: speech_pipeline
       ref: HEAD
-      resolved-ref: "4732c4f022300a5bb9a0da96b5cac10247473061"
+      resolved-ref: ea6482c9e4b839f041aab865e2ee87be9c711cb4
       url: "https://github.com/lohanidamodar/speech-pipeline.git"
     source: git
     version: "0.1.0"

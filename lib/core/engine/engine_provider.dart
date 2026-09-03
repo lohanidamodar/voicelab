@@ -83,10 +83,18 @@ final cloneServiceProvider = FutureProvider<CloneService>((ref) async {
   final service = await CloneService.start(
     modelPath: modelPath,
     family: family,
-    libraryPath: paths?.libraryPath,
+    // Found rather than configured: a shipped build carries its libraries
+    // beside the executable, and there is nobody to pass a --dart-define to.
+    libraryPath: resolveNativeLibraryDir(
+      NativeLibrary.audioCpp,
+      paths?.libraryPath,
+    ),
     backend: paths?.backend ?? AcBackend.best,
     sttModelsDir: paths?.sttModelsDir,
-    sherpaLibraryPath: paths?.sherpaLibraryPath,
+    sherpaLibraryPath: resolveNativeLibraryDir(
+      NativeLibrary.sherpaOnnx,
+      paths?.sherpaLibraryPath,
+    ),
   );
   ref.onDispose(service.dispose);
   return service;

@@ -1,0 +1,122 @@
+# Build and publish the Windows release.
+#
+# audio.cpp is built from source here, not downloaded: its Windows releases
+# contain statically linked executables and no `audiocpp_c.dll`, which is the
+# shared library this app loads through FFI. sherpa-onnx does publish one, so
+# that is fetched.
+#
+# CPU only. A Vulkan build needs the Vulkan SDK on the runner and roughly
+# triples the download; a GPU-accelerated build is a local one for now.
+
+name: Windows Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build, without the leading v'
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  # Pinned so a release is reproducible and the notices name the right build.
+  AUDIOCPP_TAG: v0.7.1
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Work out the version
+        id: version
+        shell: pwsh
+        run: |
+          $tag = '${{ github.event.inputs.version }}'
+          if (-not $tag) { $tag = '${{ github.ref_name }}' -replace '^v', '' }
+
+          # The zip name and the release title both come from pubspec.yaml. A
+          # tag that disagrees ships a build labelled with the wrong version,
+          # so stop rather than guess which of the two is right.
+          $line = (Select-String -Path pubspec.yaml -Pattern '^version:\s*(.+)$').Matches[0].Groups[1].Value.Trim()
+          $pubspec = $line.Split('+')[0]
+          if ($tag -ne $pubspec) {
+            throw "Tag says $tag but pubspec.yaml says $pubspec. Update one of them."
+          }
+          "version=$tag" >> $env:GITHUB_OUTPUT
+
+      - run: flutter pub get
+      - run: dart analyze --fatal-infos
+      - run: flutter test
+
+      # Keyed on the tag alone: the same tag always produces the same library,
+      # so a hit skips twenty minutes of MSVC.
+      - name: Cache audio.cpp
+        id: audiocpp-cache
+        uses: actions/cache@v4
+        with:
+          path: audiocpp-lib
+          key: audiocpp-${{ env.AUDIOCPP_TAG }}-windows-x64-cpu
+
+      - name: Build audio.cpp
+        if: steps.audiocpp-cache.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          git clone --depth 1 --branch $env:AUDIOCPP_TAG https://github.com/0xShug0/audio.cpp.git audiocpp-src
+          cmake -B audiocpp-build -S audiocpp-src -DCMAKE_BUILD_TYPE=Release
+          cmake --build audiocpp-build --target audiocpp_c --config Release
+
+          # The build tree scatters the library and its ggml backends; the
+          # packager wants them in one directory.
+          New-Item -ItemType Directory -Force -Path audiocpp-lib | Out-Null
+          Get-ChildItem audiocpp-build -Recurse -Filter *.dll |
+            ForEach-Object { Copy-Item $_.FullName audiocpp-lib -Force }
+          if (-not (Test-Path audiocpp-lib\audiocpp_c.dll)) {
+            throw "audiocpp_c.dll was not built. Check the CMake log above."
+          }
+          Get-ChildItem audiocpp-lib | Select-Object Name, Length
+
+      - name: Build and package
+        run: dart run tool/package_windows.dart --audiocpp-dir audiocpp-lib
+
+      - name: Checksums
+        shell: pwsh
+        working-directory: build/release
+        run: |
+          Get-ChildItem -Filter '*.zip' -File |
+            ForEach-Object { "$((Get-FileHash $_ -Algorithm SHA256).Hash.ToLower())  $($_.Name)" } |
+            Set-Content SHA256SUMS.txt
+          Get-Content SHA256SUMS.txt
+
+      - name: Publish
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTES: |
+            ## Install
+
+            Unpack the zip and run `voicelab.exe`. Everything it needs to start is in there — no runtime to install.
+
+            ## First run
+
+            Pick a voice in **Settings › Voice model**. It shows each model's size and licence, downloads the one you choose, and shares it with any other PopupBits app on this machine. Nothing is bundled: the weights come from their publishers under the licence shown.
+
+            ## Licences
+
+            VoiceLab is MIT. The models are not, and one recogniser is not open source at all — see `THIRD-PARTY-NOTICES.md` in the download.
+
+            Windows x64. This build runs the speech engine on the CPU; a GPU build has to be made locally for now. Verify with `SHA256SUMS.txt`.
+        run: |
+          $v = '${{ steps.version.outputs.version }}'
+          gh release create "v$v" `
+            "build/release/voicelab-$v-windows-x64.zip" `
+            build/release/SHA256SUMS.txt `
+            --title "VoiceLab $v" --notes "$env:NOTES"
